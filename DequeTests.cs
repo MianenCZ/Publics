@@ -1,9 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -31,6 +28,82 @@ namespace Tests
 			Assert.AreEqual(d[1], 1);
 			Assert.AreEqual(d.First, 5);
 			Assert.AreEqual(d.Last, 1);
+		}
+
+		[TestMethod()]
+		public void Insert_KliberExample()
+		{
+			var d = new Deque<int>();
+			var l = new List<int>();
+			for (int i = 1; i < 1000; i++)
+			{
+				d.Add(i);
+				l.Add(i);
+				Assert.IsTrue(ForEachEqual(d, l));
+			}
+			for (int i = -1; i >= -1000; i--)
+			{
+				d.Insert(0, i);
+				l.Insert(0, i);
+				Assert.IsTrue(ForEachEqual(d, l));
+			}
+		}
+
+		[TestMethod()]
+		public void Insert_Reverse_KliberExample()
+		{
+			var d = new Deque<int>();
+			var l = new List<int>();
+			for (int i = 0; i < 1000; i++)
+			{
+				d.Add(i);
+				l.Add(i);
+				Assert.IsTrue(ForEachEqual(d, l));
+			}
+			for (int i = 1000; i >= 0; i--)
+			{
+				d.Insert(i, i);
+				l.Insert(i, i);
+				Assert.IsTrue(ForEachEqual(d, l));
+				d.Reverse();
+				l.Reverse();
+				Assert.IsTrue(ForEachEqual(d, l));
+			}
+		}
+
+		[TestMethod()]
+		public void Add_KliberExample()
+		{
+			var d = new Deque<string>();
+			d.Add("a");
+			d.Add(null);
+			Assert.AreEqual(1, d.IndexOf(null)); // mělo by vrátit 1, vrátí 0.
+
+		}
+
+		[TestMethod()]
+		public void Insert_Reverse_16Bug()
+		{
+			var d = new Deque<int>();
+			var l = new List<int>();
+			int val = 16;
+			for (int i = 0; i < val; i++)
+			{
+				d.Add(i);
+				l.Add(i);
+				Assert.IsTrue(ForEachEqual(d, l));
+			}
+			for (int i = val; i >= 0; i--)
+			{
+				if (ForEachEqual(d, l) != true)
+					Console.Write(i);
+				d.Insert(i, i);
+				l.Insert(i, i);
+				Assert.IsTrue(ForEachEqual(d, l));
+				d.Reverse();
+				l.Reverse();
+				Assert.IsTrue(ForEachEqual(d, l));
+			}
 		}
 
 		[TestMethod()]
@@ -70,7 +143,7 @@ namespace Tests
 		{
 			var d = new Deque<int> { -10, -9, -8, -7, -6 };
 			var items = new List<int> { -10, -9, -8, -7, -6 };
-			
+
 			int Counter = 0;
 			foreach (var item in d)
 			{
@@ -113,6 +186,28 @@ namespace Tests
 		}
 
 		[TestMethod()]
+		public void ReverseAdd()
+		{
+			Deque<int> deque = new Deque<int>();
+			deque.Add(1); deque.Add(2); deque.Add(3);
+			IList<int> reverse = DequeTest.GetReverseView(deque);
+			Assert.AreEqual(0,deque.IndexOf(1)); 
+			Assert.AreEqual(2,reverse.IndexOf(1)); 
+			Assert.AreEqual(1,deque[0]);
+			Assert.AreEqual(2,deque[1]);
+			Assert.AreEqual(3,deque[2]);
+			Assert.AreEqual(3, reverse[0]);
+			Assert.AreEqual(2, reverse[1]);
+			Assert.AreEqual(1, reverse[2]);
+
+			deque.Add(100);
+
+			Assert.AreEqual(4, deque.Count);
+			Assert.AreEqual(4, reverse.Count);
+
+		}
+
+		[TestMethod()]
 		public void Wrapping()
 		{
 			var d = GetWrappedDq();
@@ -152,6 +247,34 @@ namespace Tests
 
 			d.Insert(0, 5);
 			d.Insert(0, 6);
+		}
+
+		[TestMethod()]
+		public void RemoveNull_1()
+		{
+			Deque<string> d = new Deque<string>();
+			d.Add("B");
+			d.Add(null);
+			Assert.IsTrue(d.Remove(null));
+			Assert.IsFalse(d.Remove(null));
+		}
+
+		[TestMethod()]
+		public void RemoveNull_2()
+		{
+			Deque<string> d = new Deque<string>();
+			d.Add("A");
+			d.Add("B");
+			Assert.IsFalse(d.Remove(null));
+		}
+
+		[TestMethod()]
+		public void RemoveNull_3()
+		{
+			Deque<string> d = new Deque<string>();
+			d.Add(null);
+			d.Add(null);
+			Assert.IsFalse(d.Remove("A"));
 		}
 
 		[TestMethod()]
@@ -253,6 +376,17 @@ namespace Tests
 			Assert.ThrowsException <ArgumentOutOfRangeException>(() => d[1]);
 			Assert.ThrowsException <ArgumentOutOfRangeException>(() => d[-1]);
 			Assert.ThrowsException <ArgumentOutOfRangeException>(() => d[10]);
+		}
+
+		[TestMethod()]
+		public void IndexofString()
+		{
+			var d = new Deque<string>();
+			d.Add("a");
+			d.Add(null);
+			d.Add("b");
+			Assert.AreEqual(2, d.IndexOf("b"));
+
 		}
 
 		[TestMethod()]
